@@ -16,3 +16,6 @@ async function Detalle(pokemon) {
         <p>Ataque: ${data.stats[1].base_stat} Defensa: ${data.stats[2].base_stat}</p>
         <p>Ataque Especial: ${data.stats[3].base_stat} Defensa Especial: ${data.stats[4].base_stat}</p>`
 }
+
+
+Detalle(100)

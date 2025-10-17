@@ -1,37 +1,73 @@
-let pokemones = [];
-
-async function Conexion(filtrotipo) {
-  if (filtrotipo === "All") {
-    const res = await fetch("https://pokeapi.co/api/v2/pokemon?limit=1024");
-    const data = await res.json();
-    return data.results;
-  } else {
-    const res = await fetch(`https://pokeapi.co/api/v2/type/${filtrotipo}`);
-    const data = await res.json();
-
-    const pokemonesTipo = [];
-    for (let i = 0; i < data.pokemon.length; i++) {
-      pokemonesTipo.push(data.pokemon[i].pokemon);
+function buscadorfuncion(sza){
+    if(sza.length >= 3){
+        const filtrados = [];
+        for (let i = 0; i < pokemones.length; i++) {
+            const nombre = pokemones[i].name.toLowerCase();
+            if (nombre.includes(sza.toLowerCase())) {
+                filtrados.push(pokemones[i]);
+            }
+        }
+        let listaHTML = generarLista(filtrados)
+        document.getElementById("la-lista").innerHTML = listaHTML;
+    }else{
+        let listaHTML = generarLista(pokemones)
+        document.getElementById("la-lista").innerHTML = listaHTML;
     }
-    return pokemonesTipo;
-  }
 }
 
-async function General() {
-  if (pokemones.length === 0) {
-    pokemones = await Conexion("All");
-  }
+function generarLista(arraypokemones) {
+    let listaHTML = "";
+    for (let i = 0; i < arraypokemones.length; i++) {
+        let id = arraypokemones[i].url.split("/")[6];
+        listaHTML += `
+        <div class="c-lista-pokemon poke-${id}" onclick="Detalle('${id}')">
+            <p>#${id}</p>
+            <img src="https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${id}.png" width="auto" height="60" loading="lazy" alt="${arraypokemones[i].name}">
+            <p>${arraypokemones[i].name}</p>
+        </div>`;
+    }
 
-  // Asegúrate de tener definida esta función antes de llamarla
-  // Si no la tienes, comenta esta línea o crea la función
-  // Home();
+    return listaHTML;
 }
+function Home() {
+    document.getElementById("root").innerHTML 
+     //buscador
+    const buscador = document.createElement("input");
+    buscador.classList.add("c-buscador");
+    buscador.type = "text";
+    buscador.placeholder = "Buscar Pokémon...";
+    buscador.addEventListener("input", () => {
+            buscadorfuncion(buscador.value);
+    });
+    
+ //contenedor filtro
+    const tipos = [
+        "normal", "fighting", "flying", "poison", "ground", "rock", "bug",
+        "ghost", "steel", "fire", "water", "grass", "electric", "psychic", "ice",
+        "dragon", "dark", "fairy", "stellar", "unknown"
+    ];
 
-General();
+    const contenedorFiltro = document.createElement("div");
+    contenedorFiltro.classList.add("tipos-container"); 
 
-async function FiltroConexion(Elfiltro) {
-  document.getElementById("la-lista").innerHTML = "";
-  pokemones = await Conexion(Elfiltro);
-  const listaHTML = generarLista(pokemones);
-  document.getElementById("la-lista").innerHTML = listaHTML;
+    for (let i = 0; i < tipos.length; i++) {
+        const btn = document.createElement("button");
+        btn.textContent = tipos[i];
+        
+        // Agregar el evento click para filtrar por tipo
+        btn.addEventListener("click", () => {
+            FiltroConexion(tipos[i]); 
+        });
+
+        // Agregar el botón al contenedor
+        contenedorFiltro.appendChild(btn);
+    }
+    //mostrar lista
+    const contenedorPokes = document.createElement("div")
+    contenedorPokes.id = "la-lista"
+    contenedorPokes.innerHTML = generarLista(pokemones);
+
+    document.getElementById("root").appendChild(buscador)
+    document.getElementById("root").appendChild(contenedorFiltro)
+    document.getElementById("root").appendChild(contenedorPokes)
 }
